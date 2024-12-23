@@ -7,12 +7,23 @@ import { STATE } from "../../config/constants.js";
 
 router.get("/", async (req, res) => {
   try {
+    let student_id = req.query.id;
+    let rollno = req.query.rollno;
+    let query = {};
+    query.isactive = STATE.ACTIVE;
+    rollno != undefined ? (query.rollno = rollno) : "";
+
+    student_id != undefined
+      ? (query.$expr = { $eq: ["$_id", { $toObjectId: student_id }] })
+      : "";
+
     let studentData = await studentModel.aggregate([
       {
-        $match: {
-          isactive: STATE.ACTIVE,
-        },
+        $match: query,
       },
+      // {
+      //   $match: { $expr: { $eq: ["$_id", { $toObjectId: student_id }] } },
+      // },
       {
         $project: {
           isactive: 0,
@@ -20,6 +31,12 @@ router.get("/", async (req, res) => {
         },
       },
     ]);
+
+    // console.log(studentData);
+
+    if (studentData.length === 0) {
+      return send(res, setErrorRes(RESPONSE.NOT_FOUND, "Student data"));
+    }
 
     return send(res, RESPONSE.SUCCESS, studentData);
   } catch (error) {

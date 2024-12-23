@@ -16,10 +16,14 @@ export const RESPONSE = {
     code: 202,
     message: " already exists",
   },
-
   INVALID: {
     code: 203,
     message: " is invalid",
+  },
+  
+  NOT_FOUND: {
+    code: 204,
+    message: " not found",
   },
 };
 
