@@ -42,7 +42,9 @@ router.delete("/", async (req, res) => {
     //     _id: student_id,
     //   },
     //   {
-    //     isactive: STATE.INACTIVE,
+    //     $set: {
+    //       isactive: STATE.INACTIVE,
+    //     },
     //   }
     // );
     // await studentModel.deleteOne({
