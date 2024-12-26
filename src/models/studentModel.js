@@ -22,9 +22,10 @@ const studentSchema = new mongoose.Schema({
   //     required: true,
   //   },
   // teacher_id: {
-  //     type: String,
-  //     required: true,
-  //   },
+  //   type: Schema.Types.ObjectId,
+  //   ref: "accounts",
+  //   required: true,
+  // },
 });
 
 export default mongoose.model("students", studentSchema);
