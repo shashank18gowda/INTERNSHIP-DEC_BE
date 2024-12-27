@@ -20,10 +20,15 @@ export const RESPONSE = {
     code: 203,
     message: " is invalid",
   },
-  
+
   NOT_FOUND: {
     code: 204,
     message: " not found",
+  },
+
+  ACCESS_DENIED: {
+    code: 205,
+    message: "Access denied",
   },
 };
 

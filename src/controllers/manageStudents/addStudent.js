@@ -5,10 +5,15 @@ import { RESPONSE } from "../../config/global.js";
 import { send, setErrorRes } from "../../helper/responseHelper.js";
 import { STATE } from "../../config/constants.js";
 import validator from "validator";
+import { authenticate } from "../../middlewares/authenticate.js";
 
-router.post("/", async (req, res) => {
+router.post("/", authenticate, async (req, res) => {
   try {
+    // console.log(req.user);
+
     const { name, rollno, email } = req.body;
+    let teacher_id = req.user.id;
+
     if (!name || name == undefined) {
       // const response = RESPONSE.REQUIRED;
       // res.json({
@@ -62,6 +67,7 @@ router.post("/", async (req, res) => {
       name: name,
       rollno: rollno,
       email: email,
+      teacher_id: teacher_id,
     });
 
     return send(res, RESPONSE.SUCCESS);

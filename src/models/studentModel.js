@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const studentSchema = new mongoose.Schema({
   name: {
@@ -21,11 +21,11 @@ const studentSchema = new mongoose.Schema({
   //     type: [String],
   //     required: true,
   //   },
-  // teacher_id: {
-  //   type: Schema.Types.ObjectId,
-  //   ref: "accounts",
-  //   required: true,
-  // },
+  teacher_id: {
+    type: Schema.Types.ObjectId,
+    ref: "teachers",
+    required: true,
+  },
 });
 
 export default mongoose.model("students", studentSchema);
