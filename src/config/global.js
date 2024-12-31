@@ -30,6 +30,15 @@ export const RESPONSE = {
     code: 205,
     message: "Access denied",
   },
+  UNAUTHORIZED: {
+    code: 206,
+    message: "UNAUTHORIZED REQUEST",
+  },
+
+  MULTER_ERR: {
+    code: 207,
+    message: "MULTER ERROR!!",
+  },
 };
 
 // export default RESPONSE;

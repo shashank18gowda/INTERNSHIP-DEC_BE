@@ -3,74 +3,93 @@ const router = Router();
 import studentModel from "../../models/studentModel.js";
 import { RESPONSE } from "../../config/global.js";
 import { send, setErrorRes } from "../../helper/responseHelper.js";
-import { STATE } from "../../config/constants.js";
+import { ROLE, STATE } from "../../config/constants.js";
 import validator from "validator";
 import { authenticate } from "../../middlewares/authenticate.js";
+//
+import image from "../../middlewares/uploads.js";
+import multer from "multer";
+const upload = image.array("image");
 
 router.post("/", authenticate, async (req, res) => {
   try {
-    // console.log(req.user);
+    // if (req.user.role != ROLE.TEACHER) {
+    //   return send(res, RESPONSE.UNAUTHORIZED);
+    // } //for role based access
 
-    const { name, rollno, email } = req.body;
-    let teacher_id = req.user.id;
+    upload(req, res, async (err) => {
+      if (!req.files || req.files.length < 1) {
+        return send(res, setErrorRes(RESPONSE.REQUIRED, "image"));
+      }
 
-    if (!name || name == undefined) {
-      // const response = RESPONSE.REQUIRED;
-      // res.json({
-      //   code: response.code,
-      //   message: "name" + response.message,
+      if (err instanceof multer.MulterError) {
+        console.log(err);
+
+        return send(res, RESPONSE.MULTER_ERR);
+      } else if (err) {
+        console.log("Inside Multer:", err);
+        return send(res, RESPONSE.UNKNOWN_ERR);
+      }
+
+      let fileName = [];
+      if (req.files != null) {
+        req.files.forEach((ele) => {
+          fileName.push(ele.filename);
+        });
+      }
+    
+
+      const { name, rollno, email } = req.body;
+      let teacher_id = req.user.id;
+
+      if (!name || name == undefined) {
+        return send(res, setErrorRes(RESPONSE.REQUIRED, "name"));
+      }
+
+      if (!rollno || rollno == undefined) {
+        return send(res, setErrorRes(RESPONSE.REQUIRED, "rollno"));
+      }
+
+      if (!email || email == undefined) {
+        return send(res, setErrorRes(RESPONSE.REQUIRED, "email"));
+      }
+
+      // let isExist = await studentModel.find({
+      //   rollno: rollno,
       // });
 
-      return send(res, setErrorRes(RESPONSE.REQUIRED, "name"));
-    }
+      let isEmail = validator.isEmail(email);
 
-    if (!rollno || rollno == undefined) {
-      return send(res, setErrorRes(RESPONSE.REQUIRED, "rollno"));
-    }
+      if (!isEmail) {
+        return send(res, setErrorRes(RESPONSE.INVALID, "email"));
+      }
 
-    if (!email || email == undefined) {
-      // const response = RESPONSE.REQUIRED;
-      // res.json({
-      //   code: response.code,
-      //   message: "email" + response.message,
-      // });
-
-      return send(res, setErrorRes(RESPONSE.REQUIRED, "email"));
-    }
-
-    // let isExist = await studentModel.find({
-    //   rollno: rollno,
-    // });
-
-    let isEmail = validator.isEmail(email);
-
-    if (!isEmail) {
-      return send(res, setErrorRes(RESPONSE.INVALID, "email"));
-    }
-
-    let isExist = await studentModel.aggregate([
-      {
-        $match: {
-          rollno: rollno,
-          isactive: STATE.ACTIVE,
+      let isExist = await studentModel.aggregate([
+        {
+          $match: {
+            rollno: rollno,
+            isactive: STATE.ACTIVE,
+          },
         },
-      },
-    ]);
+      ]);
 
-    if (isExist.length > 0) {
-      return send(res, setErrorRes(RESPONSE.ALREADY_EXISTS, "rollno"));
-    }
+      if (isExist.length > 0) {
+        return send(res, setErrorRes(RESPONSE.ALREADY_EXISTS, "rollno"));
+      }
+      // console.log(fileName);
 
-    // console.log(isExist.length);
+      studentModel.create({
+        name: name,
+        rollno: rollno,
+        email: email,
+        teacher_id: teacher_id,
+        image: fileName,
+      });
 
-    studentModel.create({
-      name: name,
-      rollno: rollno,
-      email: email,
-      teacher_id: teacher_id,
+      return send(res, RESPONSE.SUCCESS);
+
+      // Everything went fine.
     });
-
-    return send(res, RESPONSE.SUCCESS);
   } catch (error) {
     console.log(error.message);
     return send(res, RESPONSE.UNKNOWN_ERR);

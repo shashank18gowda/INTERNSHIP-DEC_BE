@@ -17,10 +17,10 @@ const studentSchema = new mongoose.Schema({
     type: Number,
     default: 1,
   },
-  // image: {
-  //     type: [String],
-  //     required: true,
-  //   },
+  image: {
+    type: [String],
+    required: true,
+  },
   teacher_id: {
     type: Schema.Types.ObjectId,
     ref: "teachers",

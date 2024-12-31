@@ -34,6 +34,7 @@ router.post("/", async (req, res) => {
           teacher_name: userData.teacher_name,
           phone: userData.phone,
           email: userData.email,
+          role: userData.role,
         },
         process.env.SECRETKEY
       );
